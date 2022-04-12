@@ -9,10 +9,9 @@ int currLine = 1, currPos = 1;
 DIGIT       [0-9]
 COMMENT		[##].* 
 DIGIT_ERROR ({DIGIT}|[_])
-LETTERS     [a-zA-Z] 
+LETTER_UNDER [a-zA-Z_]
 ALL         [a-zA-Z0-9]
-ALL_UNDER   [a-zA-Z0-9_]
-IDENTITY    {ALL_UNDER}*{ALL}* 
+IDENTITY    {LETTER_UNDER}*{ALL}* 
 
 %%
    /* specific lexer rules in regex */
@@ -80,7 +79,7 @@ IDENTITY    {ALL_UNDER}*{ALL}*
 
    /* Errors in Lexicon Parsing */
 {DIGIT_ERROR}{IDENTITY}                                        {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos - 1, yytext); exit(0);}
-{ALL_UNDER}*[_]                                                {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos - 1, yytext); exit(0);}
+{IDENTITY}*[_]                                                {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos - 1, yytext); exit(0);}
  
    /* NOTE: For some reason, the error parsing needs to be placed before the identity line of code is active, probably needs to parse through erroneous cases before identifying correct ones ig */
 {IDENTITY}                                                     {printf("IDENT %s\n", yytext); currPos += yyleng;}
