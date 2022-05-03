@@ -2,7 +2,6 @@
    
 %{   
    /* write your C code here for definitions of variables and including headers */
-#include "y.tab.h"
 int currLine = 1, currPos = 1;
 %}
 
