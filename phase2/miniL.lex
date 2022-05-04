@@ -76,14 +76,14 @@ IDENTITY    {LETTER_UNDER}*{ALL}*
 "]"                     {printf("R_SQUARE-BRACKET\n"); currPos += yyleng;}
 ":="                    {printf("ASSIGN\n"); currPos += yyleng;}
 
-(\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)         {printf("NUMBER %s\n", yytext); currPos += yyleng;}
+(\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)         {currPos += yyleng; yylval.nVal = atoi(yytext); return NUMBER}
 
    /* Errors in Lexicon Parsing */
 {DIGIT_ERROR}{IDENTITY}                                        {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos - 1, yytext); exit(0);}
-{IDENTITY}*[_]                                                {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos - 1, yytext); exit(0);}
+{IDENTITY}*[_]                                                 {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos - 1, yytext); exit(0);}
  
    /* NOTE: For some reason, the error parsing needs to be placed before the identity line of code is active, probably needs to parse through erroneous cases before identifying correct ones ig */
-{IDENTITY}                                                     {printf("IDENT %s\n", yytext); currPos += yyleng;}
+{IDENTITY}                                                     {currPos += yyleng; yylval.iVal = yytext; return IDENT}
 .                                                              {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos - 1, yytext); exit(0);}
 
 %%
