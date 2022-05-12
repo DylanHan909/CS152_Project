@@ -74,16 +74,16 @@ IDENTITY    {LETTER_UNDER}*{ALL}*
 ")"                     {printf("R_PAREN\n"); currPos += yyleng; return R_PAREN;}
 "["                     {printf("L_SQUARE_BRACKET\n"); currPos += yyleng; return L_SQUARE_BRACKET;}
 "]"                     {printf("R_SQUARE_BRACKET\n"); currPos += yyleng; return R_SQUARE_BRACKET;}
-":="                    {printf("ASSIGN\n"); currPos += yyleng; return FUNCTION;}
+":="                    {printf("ASSIGN\n"); currPos += yyleng; return ASSIGN;}
 
-(\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)         {currPos += yyleng; yylval.nVal = atoi(yytext); return NUMBER}
+(\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)         {currPos += yyleng; yylval.nVal = atoi(yytext); return NUMBER;}
 
    /* Errors in Lexicon Parsing */
 {DIGIT_ERROR}{IDENTITY}                                        {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos - 1, yytext); exit(0);}
 {IDENTITY}*[_]                                                 {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos - 1, yytext); exit(0);}
  
    /* NOTE: For some reason, the error parsing needs to be placed before the identity line of code is active, probably needs to parse through erroneous cases before identifying correct ones ig */
-{IDENTITY}                                                     {currPos += yyleng; yylval.iVal = yytext; return IDENT}
+{IDENTITY}                                                     {currPos += yyleng; yylval.iVal = yytext; return IDENT;}
 .                                                              {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos - 1, yytext); exit(0);}
 
 %%
@@ -104,5 +104,6 @@ int main(int argc, char ** argv)
       yyin = stdin;
    }
    
-   yylex();
+   //yylex();
+   yyparse();
 }
