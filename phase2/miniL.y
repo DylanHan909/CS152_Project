@@ -59,7 +59,8 @@
               READ VAR_LOOP {printf("STATEMENT -> READ VAR_LOOP\n");} |
               WRITE VAR_LOOP {printf("STATEMENT -> WRITE VAR_LOOP\n");} |
               CONTINUE {printf("STATEMENT -> CONTINUE\n");} |
-              RETURN EXPRESSION  {printf("STATEMENT -> RETURN EXPRESSION\n");}
+              RETURN EXPRESSION  {printf("STATEMENT -> RETURN EXPRESSION\n");} |
+              error {yyerror("invalid statement"); yyerrok; yyclearin; }
   ;//done(5/10 removed endIF
   ELSE_BRANCH: ELSE STATEMENT_LOOP {printf("ELSE_BRANCH -> ELSE STATEMENT_LOOP\n");} | {printf("ELSE_BRANCH -> ε\n");} 
   ;
