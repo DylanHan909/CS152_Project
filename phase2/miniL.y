@@ -27,7 +27,9 @@
 
 %left OR AND
 %left EQ NEQ LT GT LTE GTE
-%left ADD SUB MULT DIV MOD
+//Precedence Update
+%left ADD SUB
+%left MULT DIV MOD
 %left L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
 %left ASSIGN
 
