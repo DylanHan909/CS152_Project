@@ -1,20 +1,63 @@
     /* cs152-miniL phase2 */
 %{
+ #define YY_NO_UNPUT
  #include <stdio.h>
  #include <stdlib.h>
+
+ #include <map>
+ #include <set>
+ #include <string.h>
+ #include <iostream>
+ #include <sstream>
+ #include <string>
+ #include <cstring>
+ 
+ using namespace std;
+
+ int tempCount = 0;
+ int labelCount = 0;
+ extern char* yytext;
+ std::map<std::string, std::string> tempVars;
+ std::map<std::string, int> arrSize;
+ bool mainFunc = false;
+ std::set<std::string> funcs;
+ std::set<std::string> reserved = {"FUNCTION", "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS", "BEGIN_BODY", "END_BODY", "INTEGER",
+    "ARRAY", "OF", "IF", "THEN", "ENDIF", "ELSE", "WHILE", "DO", "FOREACH", "IN", "BEGINLOOP", "ENDLOOP", "CONTINUE", "READ", "WRITE", "AND", "OR", 
+    "NOT", "TRUE", "FALSE", "RETURN", "SUB", "ADD", "MULT", "DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LTE", "GTE", "L_PAREN", "R_PAREN", "L_SQUARE_BRACKET",
+    "R_SQUARE_BRACKET", "COLON", "SEMICOLON", "COMMA", "ASSIGN", "function", "Ident", "beginparams", "endparams", "beginlocals", "endlocals", "integer", 
+    "beginbody", "endbody", "beginloop", "endloop", "if", "endif", "foreach", "continue", "while", "else", "read", "do", "write"};
+ int yylex();
+ std::string newTemp();
+ std::string newLabel();
+
  void yyerror(const char *msg);
  extern int currLine;
  extern int currPos;
- FILE * yyin;
+ extern FILE * yyin;
 %}
 
 %union{
   char * iVal;
   int nVal;
+
+  struct S{
+    char* code;
+  } statement;
+
+  struct E{
+    char* place;
+    char* code;
+    bool isArr;
+  } expression;
 }
 
 %error-verbose
 %locations
+
+%type <expression> Ident IDENTIFIER_LOOP
+%type <expression> FUNCTIONS FUNCTION_LOOP DECLARATION DECLARATION_LOOP VAR VAR_LOOP
+%type <expression> EXPRESSION EXPRESSION_LOOP MULTIPLICATIVE_EXPR TERM BOOL-EXPR RELATION-EXPR RELATION-AND-EXPR RELATION_EXPR_BODY COMP
+%type <statement> STATEMENT STATEMENT_LOOP ELSE_BRANCH
 
 /* %start program */
 %start PROGRAM
@@ -39,12 +82,45 @@
 %% 
   /* write your rules here */
   //Program
-  PROGRAM:            FUNCTION_LOOP {printf("PROGRAM -> FUNCTION_LOOP\n");} | {printf("PROGRAM -> ε\n");} 
+  PROGRAM: FUNCTION_LOOP {printf("PROGRAM -> FUNCTION_LOOP\n");} | {printf("PROGRAM -> ε\n");} 
   ;
   //Function
   FUNCTION_LOOP: FUNCTIONS FUNCTION_LOOP {printf("FUNCTION_LOOP -> FUNCTIONS FUNCTION_LOOP\n");} | {printf("FUNCTION_LOOP -> ε\n");} 
   ;
-  FUNCTIONS: FUNCTION IDENT SEMICOLON BEGIN_PARAMS DECLARATION_LOOP END_PARAMS BEGIN_LOCALS DECLARATION_LOOP END_LOCALS BEGIN_BODY STATEMENT_LOOP END_BODY {printf("FUNCTIONS -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS DECLARATION_LOOP END_PARAMS BEGIN_LOCALS DECLARATION_LOOP END_LOCALS BEGIN_BODY STATEMENT_LOOP END_BODY\n");}
+  FUNCTIONS: FUNCTION IDENT SEMICOLON BEGIN_PARAMS DECLARATION_LOOP END_PARAMS BEGIN_LOCALS DECLARATION_LOOP END_LOCALS BEGIN_BODY STATEMENT_LOOP END_BODY 
+      {
+        //std::string temp = "func";
+        /*
+        temp.append($2.place);
+        temp.append("\n");
+        std::string s = $2.place;
+        if (s == "main") {
+          mainFunc = true;
+        }
+        temp.append($5.code);
+        */
+
+        //std::cout << "``BRUHHH" << $2.place;
+        /* func fibonacci
+
+        */
+        /*
+          function fibonacci;
+          beginparams
+            k : integer;
+          endparams
+          beginlocals
+          endlocals
+          beginbody
+            if (k <= 1) then return 1; endif;
+            return fibonacci(k - 1) + fibonacci(k - 2);
+          endbody
+        */
+
+        //string s = $5;
+        cout << "BRUHHH" ;
+        printf("%s\n", $2.place);
+      }
   ;
   //Identifier
   IDENTIFIER_LOOP: Ident {printf("IDENTIFIER_LOOP -> IDENT\n");} | Ident COMMA IDENTIFIER_LOOP {printf("IDENTIFIER_LOOP -> IDENT COMMA IDENTIFIER_LOOP\n");}
@@ -110,4 +186,16 @@
 
 void yyerror(const char *msg) {
    printf("** Line %d, position %d: %s\n", currLine, currPos, msg);
+}
+
+std::string newTemp() {
+  string t = "__temp__" + to_string(tempCount);
+  tempCount++;
+  return t;
+}
+
+std::string newLabel() {
+  string l = "__label__" + to_string(labelCount);
+  labelCount++;
+  return l;
 }

@@ -88,6 +88,8 @@ IDENTITY    {LETTER_UNDER}*{ALL}*
 
 %%
 	/* C functions used in lexer */
+int yyparse();
+int yylex();
 
 int main(int argc, char ** argv)
 {
